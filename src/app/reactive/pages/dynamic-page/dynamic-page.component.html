@@ -1,89 +1,108 @@
 <h2>Reactivos: <small> Dinámicos </small></h2>
 <hr>
 
-<form autocomplete="off">
+<form autocomplete="off" [formGroup]="myForm"> >
 
-    <!-- Nombre -->
-    <div class="mb-3 row">
-        <label class="col-sm-3 col-form-label">Nombre</label>
-        <div class="col-sm-9">
-            <input class="form-control"
-                   placeholder="Nombre de la persona">
-            <span class="form-text text-danger">
-                   error message
-            </span>
-        </div>
+  <!-- Nombre -->
+  <div class="mb-3 row">
+    <label class="col-sm-3 col-form-label">Nombre</label>
+    <div class="col-sm-9">
+      <input
+        class="form-control"
+        placeholder="Nombre de la persona"
+        formControlName="name"
+      />
+      @if (formUtil.isValidField(myForm, 'name')) {
+        <span class="form-text text-danger">
+          {{ formUtil.getFieldError(myForm, 'name') }}
+        </span>
+      }
     </div>
+  </div>
 
-    <!-- Agregar Favorito -->
-    <div class="mb-3 row">
-        <label class="col-sm-3 col-form-label">Agregar</label>
-        <div class="col-sm-9">
+  <!-- Agregar Favorito -->
+  <div class="mb-3 row">
+    <label class="col-sm-3 col-form-label">Agregar</label>
+    <div class="col-sm-9">
+      <div class="input-group">
 
-            <div class="input-group">
-                <input class="form-control"
-                       placeholder="Agregar favorito">
+        <input
+          class="form-control"
+          placeholder="Agregar favorito"
+          [formControl]="newFavoriteControl"
+          (keydown.enter)="addFavorite()"
+          (keydown.enter)="$event.preventDefault()"
+        />
 
-
-                <button class="btn btn-outline-primary"
-                        type="button">
-                    Agregar favorito
-                </button>
-            </div>
-        </div>
+        <button
+          class="btn btn-outline-primary"
+          type="button"
+          (click)="addFavorite()"
+          (click)="$event.preventDefault()"
+        >
+          Agregar favorito
+        </button>
+      </div>
     </div>
+  </div>
 
 
-    <!-- Lista de Juegos Favoritos -->
-    <div class="mb-3 row">
-        <label class="col-sm-3 col-form-label">Favoritos</label>
-        <div class="col-sm-9">
+  <!-- Lista de Juegos Favoritos -->
+  <div class="mb-3 row">
+    <label class="col-sm-3 col-form-label">Favoritos</label>
 
-            <div class="mb-1">
-
-                <div class="input-group">
-                    <input class="form-control">
-
-                    <button class="btn btn-outline-danger"
-                            type="button">
-                      Eliminar
-                  </button>
-                </div>
-                <span class="form-text text-danger">
-                   Este campo es requerido
-                </span>
-
-            </div>
-
-        </div>
-    </div>
-
-
-
-    <div class="row">
-        <div class="col-sm-12">
-            <button type="submit"
-                    class="btn btn-primary float-end"
-                    >
-                    <!-- [disabled]="myForm.invalid" -->
-                Guardar
+    <div class="col-sm-9" formArrayName="favoriteGames">
+      @for (objeto of favoriteGames.controls; track objeto.value; let i = $index) {
+        <div class="mb-1">
+          <div class="input-group">
+            <input
+              class="form-control"
+              [formControlName]="i"
+            >
+            <button class="btn btn-outline-danger" type="button"
+              (click)="removeFavorite(i)"
+              [disabled]="favoriteGames.length <= 1"
+            >
+              Eliminar
             </button>
+          </div>
+
+          @if (formUtil.isValidFieldArray(favoriteGames, i)) {
+            <span class="form-text text-danger">
+              {{ formUtil.getFieldArrayError( favoriteGames, i) }}
+            </span>
+          }
         </div>
+      }
+      @if ( formUtil.isValidField(myForm, 'favoriteGames')) {
+        <span class="form-text text-danger">Debe tener al menos 2 juegos</span>
+      }
     </div>
+  </div>
 
 
+
+  <div class="row">
+    <div class="col-sm-12">
+      <button type="submit" class="btn btn-primary float-end"
+        [disabled]="myForm.invalid"
+      >
+        Guardar
+      </button>
+    </div>
+  </div>
 </form>
 
 
 
 <span>Valid</span>
-<pre>{{ 'object' | json }}</pre>
+<pre>{{ myForm.valid | json }}</pre>
 <br>
 
 <span>Value</span>
-<pre>{{ 'object' | json }}</pre>
+<pre>{{ myForm.value | json }}</pre>
 <br>
 
 <span>Agregar Juego</span>
-<pre>{{ 'object' | json }}</pre>
-<pre>{{ 'object' | json }}</pre>
+<pre>{{ myForm.controls['favoriteGames'].errors| json }}</pre>
+<pre>{{ myForm.controls['favoriteGames'].value | json }}</pre>

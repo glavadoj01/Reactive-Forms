@@ -101,10 +101,14 @@
 
       <div class="row">
         <div class="col">
+          @if( myForm.errors && myForm.touched) {
+            <div class="text-danger">
+              Hay algún error en el formulario, por favor verifique los campos resaltados.
+            </div>
+          }
           <button class="btn btn-primary float-end" type="submit"
             (ngSubmit)="onSubmit()"
-          >
-            Crear
+          > Crear
           </button>
         </div>
       </div>
@@ -116,11 +120,17 @@
 <h2>Form Valid: <span>{{ myForm.valid | json }}</span></h2>
 <h2>Form Status: <span>{{ myForm.status | json }}</span></h2>
 <h2>Form Pending: <span>{{ myForm.pending | json }}</span></h2>
-<h2>Form errors</h2>
-<span>{{ myForm.errors | json }}</span>
 <h2>Form Values</h2>
 <span>{{ myForm.value | json }}</span>
+<!--
+  Al formularío en sí, solo esta asociada la validación Contraseñas Iguales
+  El resto de validaciones están asociadas a los controles individuales
+ -->
+<h2>Form errors (solo cuenta: Contraseñas distintas)</h2>
+<span>{{ myForm.errors | json }}</span>
 
+
+<h2>Errores en los controles individuales</h2>
 <h5>Nombre:</h5>
 <span>{{ myForm.controls['name'].errors | json }}</span>
 
@@ -133,5 +143,5 @@
 <h5>Password:</h5>
 <span>{{ myForm.controls['password'].errors | json }}</span>
 
-<h5>Confirmar:</h5>
+<h5>Confirmar Password:</h5>
 <span>{{ myForm.controls['confirmPassword'].errors | json }}</span>

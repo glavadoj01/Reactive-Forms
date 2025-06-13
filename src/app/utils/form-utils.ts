@@ -1,5 +1,9 @@
 import { AbstractControl, FormArray, FormGroup, ValidationErrors } from "@angular/forms";
 
+async function sleep() {
+  return new Promise(resolve => setTimeout( () => resolve(true), 2000));
+}
+
 export class FormUtils {
   static namePattern = '([a-zA-Z]+) ([a-zA-Z]+)';
   static emailPattern = '^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$';
@@ -55,8 +59,12 @@ export class FormUtils {
             return 'El campo no puede contener espacios';
           }
           break
-        case 'confirmPassword':
+        case 'passowrdsNotEquals':
           return 'Las contraseñas no coinciden';
+        case 'emailTaken':
+          return 'El correo electrónico ya está en uso';
+        case 'usernameTaken':
+          return 'El nombre de usuario ya está en uso';
         default:
           return `Error desconocido: ${key}`;
       }
@@ -74,11 +82,36 @@ export class FormUtils {
         formGroup.get(field2)?.setErrors(null);
         return null;
       } else {
-        // Asigna el error al control confirmPassword
-        formGroup.get(field2)?.setErrors({ confirmPassword: true });
-        return { confirmPassword: true };
+        // Asigna el error al control passowrdsNotEquals
+        formGroup.get(field2)?.setErrors({ passowrdsNotEquals: true });
+        return { passowrdsNotEquals: true };
       }
     }
+  }
+
+  static async checkingServerResponse (control: AbstractControl): Promise<ValidationErrors | null> {
+
+    await sleep();
+    const formValue = control.value;
+
+    if( formValue === 'hola@mundo.com' ) {
+      return {
+        emailTaken: true
+      }
+    }
+
+    return null
+  }
+
+  static usernameTaken(control: AbstractControl): ValidationErrors | null {
+
+    const formValue = control.value;
+    if( formValue === 'Strider' ) {
+      return {
+        usernameTaken: true
+      }
+    }
+    return null;
   }
 }
 

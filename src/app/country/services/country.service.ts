@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
+import { combineLatest, map, Observable, of } from 'rxjs';
 import { Country } from '../interfaces/country.interface';
 
 @Injectable({
@@ -39,10 +39,18 @@ export class CountryService {
       return of();
     }
     const url = `${this.URL_BASE}/alpha/${alphaCode}?fields=name,cca3,borders`;
-    return this.http.get<Country>(url);
+    return this.http.get<Country>(url)
   }
 
-  getCountryBorderByCodes (bordes: string[]) {
-    // WIP
+  getCountryNamesByBorderCodes (bordes: string[]): Observable<Country[]> {
+    if( !bordes || bordes.length === 0 ) return of([])
+    const countriesRequests: Observable<Country>[] = []
+
+    bordes.forEach( code => {
+      const request = this.getCountryByAlphaCode(code);
+      countriesRequests.push(request);
+    })
+
+    return combineLatest(countriesRequests);
   }
 }
